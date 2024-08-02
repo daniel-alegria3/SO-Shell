@@ -1,0 +1,15 @@
+*.o
+bochs.log
+
+kern/kernel
+kern/*.o
+kern/syscalls/*.o
+
+userland/shell
+userland/cat
+userland/*.o
+userland/*.a
+userland/libc/libc.a
+userland/libc/*.o
+userland/libc/*.a
+
