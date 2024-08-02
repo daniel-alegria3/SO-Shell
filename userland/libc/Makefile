@@ -1,12 +1,12 @@
 OBJ=libc.a
-CC=gcc -Wall -fno-builtin
+CC=gcc -Wall -m32 -fno-stack-protector -fno-builtin
 
-all: $(OBJ) 
+all: $(OBJ)
 
 libc.a: libc.o syscalls.o malloc.o
 	ar rcs $@ $^
 
-.o: .c 
+.o: .c
 	$(CC) -c $^
 
 clean:

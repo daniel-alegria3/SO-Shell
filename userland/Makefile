@@ -1,18 +1,18 @@
 OBJ=shell cat
-CC=gcc -Wall -fno-builtin
+CC=gcc -Wall -m32 -fno-stack-protector -fno-builtin
 
-all: $(OBJ) 
+all: $(OBJ)
 
-shell: shell.o libc/libc.a 
-	ld -Ttext=40000000 --entry=main -o $@ $^
+shell: shell.o libc/libc.a
+	ld -m elf_i386 -Ttext=40000000 --entry=main -o $@ $^
 
 cat: cat.o libc/libc.a
-	ld -Ttext=40000000 --entry=main -o $@ $^
+	ld -m elf_i386 -Ttext=40000000 --entry=main -o $@ $^
 
-libc/libc.a: 
+libc/libc.a:
 	make -C libc
 
-.o: .c 
+.o: .c
 	$(CC) -c $^
 
 clean:
