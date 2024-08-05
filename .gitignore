@@ -13,3 +13,4 @@ userland/libc/libc.a
 userland/libc/*.o
 userland/libc/*.a
 
+*.img
