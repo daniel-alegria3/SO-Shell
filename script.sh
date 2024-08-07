@@ -11,13 +11,13 @@ sudo umount /mnt/virtual
 sudo rm -rf /mnt/virtual
 
 # bximage -hd -flat 10 - c.img
-qemu-img create -f raw $DISK_FILE 10M
+qemu-img create -f raw $DISK_FILE 2M
 
 # fdisk c.img x x x -c 20 -h 16 s 63 - r n, p, 1 a 1 w w w
 (
   echo x;
     echo c;
-    echo 20;
+    echo 4;
     echo h;
     echo 16;
     echo s;
@@ -42,21 +42,18 @@ sudo mke2fs -O ^resize_inode /dev/loop1
 sudo mount -t ext2 /dev/loop1 /mnt/virtual
 
 sudo mkdir -p /mnt/virtual/boot/grub
-echo "
-(hd0) /dev/loop0
+echo "(hd0) /dev/loop0
 (hd0,1) /dev/loop1
 (hd0,2) /dev/loop2
 " | sudo tee /mnt/virtual/boot/grub/device.map
 
-echo '
-set default=0
+echo 'set default=0
 set timeout=5
 set root=(hd0,1)
 menuentry "AdaKernel" {
   multiboot /boot/kernel
   boot
-}
-' | sudo tee /mnt/virtual/boot/grub/grub.cfg
+}' | sudo tee /mnt/virtual/boot/grub/grub.cfg
 
 sudo cp kern/kernel /mnt/virtual/boot
 
