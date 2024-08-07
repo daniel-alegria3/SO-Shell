@@ -18,12 +18,12 @@ static inline void INIT_LIST_HEAD(struct list_head *list)
 	list->prev = list;
 }
 
-static inline void list_add(struct list_head *new, struct list_head *head)
+static inline void list_add(struct list_head *_new, struct list_head *head)
 {
-	new->next = head->next;
-	new->prev = head;
-	head->next->prev = new;
-	head->next = new;
+	_new->next = head->next;
+	_new->prev = head;
+	head->next->prev = _new;
+	head->next = _new;
 }
 
 static inline void list_del(struct list_head *p)
@@ -46,10 +46,10 @@ static inline int list_empty(const struct list_head *head)
 	list_entry((head)->next, type, member)
 
 #define list_for_each(p, head) \
-	for (p = (head)->next; p != (head); p = p->next) 
+	for (p = (head)->next; p != (head); p = p->next)
 
 #define list_for_each_safe(p, n, head) \
-	for (p = (head)->next, n = p->next; p != (head); p = n, n = n->next) 
+	for (p = (head)->next, n = p->next; p != (head); p = n, n = n->next)
 
 #define list_for_each_entry(p, head, member)				\
 	for (p = list_entry((head)->next, typeof(*p), member);		\

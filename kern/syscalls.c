@@ -14,7 +14,7 @@ void do_syscalls(int sys_num)
 {
 	u32 *stack_ptr;
 
-	/* 
+	/*
 	 * Stocke dans stack_ptr le pointeur vers les registres sauvegardes.
 	 * Les arguments sont transmis dans : ebx, ecx, edx, esi edi
 	 * Le code de retour sera transmis dans %eax : stack_ptr[14]

@@ -1,3 +1,4 @@
+#include "types.h"
 
 /* Descripteur de segment */
 struct gdtdesc {

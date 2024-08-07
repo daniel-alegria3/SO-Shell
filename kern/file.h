@@ -1,4 +1,5 @@
 #include "ext2.h"
+#include "list.h"
 
 struct file {
 	struct disk *disk;

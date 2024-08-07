@@ -1,8 +1,10 @@
-OBJ=kernel 
+OBJ=kernel
 
-all: $(OBJ) 
+all: $(OBJ)
+	./script.sh
+	qemu-system-i386 -hda ./c.img
 
-kernel: 
+kernel:
 	make -C kern
 	make -C userland
 
