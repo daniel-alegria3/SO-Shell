@@ -17,6 +17,6 @@ struct vconsole {
 };
 #endif
 
-struct terminal *current_term;
+extern struct terminal *current_term;
 
 void putc_console(char);

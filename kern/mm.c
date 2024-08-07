@@ -8,6 +8,11 @@
 
 #include "kmalloc.h"
 
+char *kern_heap;
+struct list_head kern_free_vm;
+
+u32 *pd0;
+u32 kmalloc_used;
 /*
  * Parcours le bitmap a la recherche d'une page libre et la marque
  * comme utilisee avant de retourner son adresse physique.
@@ -28,7 +33,7 @@ char* get_page_frame(void)
 	return (char *) -1;
 }
 
-/* 
+/*
  * Recherche une page virtuelle libre dans l'espace d'adresses virtuelles du
  * noyau. La fonction demande ensuite une page physique libre a associer.
  * NOTE: ces pages sont dans l'espace d'adressage du noyau. Celui-ci est mis a
@@ -102,7 +107,7 @@ int release_page_from_heap(char *v_addr)
 	}
 
 	prev_area = list_entry(next_area->list.prev, struct vm_area, list);
-	
+
 	if (prev_area->vm_end == v_addr) {
 		prev_area->vm_end += PAGESIZE;
 		if (prev_area->vm_end == next_area->vm_start) {
@@ -128,9 +133,9 @@ int release_page_from_heap(char *v_addr)
 	return 0;
 }
 
-/* 
+/*
  * Initialise le bitmap memoire et cree le repertoire de pages du kernel.
- * Utilise un identity mapping tel que vaddr = paddr sur 4Mo 
+ * Utilise un identity mapping tel que vaddr = paddr sur 4Mo
  */
 void init_mm(u32 high_mem)
 {
@@ -200,7 +205,7 @@ struct page_directory *pd_create(void)
 	pd = (struct page_directory *) kmalloc(sizeof(struct page_directory));
 	pd->base = get_page_from_heap();
 
-	/* 
+	/*
 	 * Espace kernel. Les v_addr < USER_OFFSET sont adressees par la table
 	 * de pages du noyau (pd0[]).
 	 */
@@ -242,7 +247,7 @@ int pd_destroy(struct page_directory *pd)
 	return 0;
 }
 
-/* 
+/*
  * Met a jour l'espace d'adressage du noyau.
  * NOTE : cet espace est commun a tous les repertoires de pages.
  */
@@ -270,11 +275,11 @@ int pd0_add_page(char *v_addr, char *p_addr, int flags)
 	return 0;
 }
 
-/* 
+/*
  * Met a jour le repertoire de pages courant
  * input:
- * 	v_addr : adresse lineaire de la page 
- * 	p_addr : adresse physique de la page allouee 
+ * 	v_addr : adresse lineaire de la page
+ * 	p_addr : adresse physique de la page allouee
  * 	pd     : structure qui doit etre mise a jour avec les pages allouees
  */
 int pd_add_page(char *v_addr, char *p_addr, int flags, struct page_directory *pd)
@@ -297,13 +302,13 @@ int pd_add_page(char *v_addr, char *p_addr, int flags, struct page_directory *pd
 	 */
 	pde = (u32 *) (0xFFFFF000 | (((u32) v_addr & 0xFFC00000) >> 20));
 
-	/* 
+	/*
 	 * On cree la table de pages correspondante si elle n'est pas presente
 	 */
 	if ((*pde & PG_PRESENT) == 0) {
 
-		/* 
-		 * Allocation d'une page pour y mettre la table. 
+		/*
+		 * Allocation d'une page pour y mettre la table.
 		 */
 		pg = get_page_from_heap();
 
@@ -316,7 +321,7 @@ int pd_add_page(char *v_addr, char *p_addr, int flags, struct page_directory *pd
 		*pde = (u32) pg->p_addr | (PG_PRESENT | PG_WRITE | flags);
 
 		/* On rajoute la nouvelle page dans la structure  passee en parametre */
-		if (pd) 
+		if (pd)
 			list_add(&pg->list, &pd->pt);
 	}
 

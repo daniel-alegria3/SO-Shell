@@ -4,6 +4,9 @@
 #include "idt.h"
 #include "mm.h"
 
+struct idtr kidtr; /* Registre IDTR */
+struct idtdesc kidt[IDTSIZE]; /* Table de IDT */
+
 void _asm_default_int(void);
 void _asm_exc_GP(void);
 void _asm_exc_PF(void);
@@ -27,15 +30,15 @@ void init_idt_desc(u16 select, u32 offset, u16 type, struct idtdesc *desc)
 }
 
 /*
- * Cette fonction initialise la IDT apres que le kernel soit charge 
- * en memoire. 
+ * Cette fonction initialise la IDT apres que le kernel soit charge
+ * en memoire.
  */
 void init_idt(void)
 {
 	int i;
 
 	/* Initialisation des descripteurs systeme par defaut */
-	for (i = 0; i < IDTSIZE; i++) 
+	for (i = 0; i < IDTSIZE; i++)
 		init_idt_desc(0x08, (u32) _asm_default_int, INTGATE, &kidt[i]);
 
 	/* Les vecteurs 0 -> 31 sont reserves pour les exceptions */
@@ -47,7 +50,7 @@ void init_idt(void)
 	init_idt_desc(0x08, (u32) _asm_irq_1, INTGATE, &kidt[33]);	/* clavier */
 
 	/* Appels systeme - int 0x30 */
-	init_idt_desc(0x08, (u32) _asm_syscalls, TRAPGATE, &kidt[48]); 
+	init_idt_desc(0x08, (u32) _asm_syscalls, TRAPGATE, &kidt[48]);
 
 	/* Initialisation de la structure pour IDTR */
 	kidtr.limite = IDTSIZE * 8;

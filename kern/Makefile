@@ -11,7 +11,7 @@ OBJ_SYSCALLS= $(SRC_SYSCALLS:.c=.o)
 all: kernel
 
 kernel: boot.o sched.o int.o $(OBJ) $(OBJ_SYSCALLS)
-	ld -m elf_i386 -z muldefs -Ttext=100000 --entry=_start $^ -o $@
+	ld -m elf_i386 -Ttext=100000 --entry=_start $^ -o $@
 
 boot.o: boot.asm
 	nasm -f elf32 -o $@ $^

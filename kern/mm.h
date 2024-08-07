@@ -52,7 +52,7 @@ struct page_directory {
 };
 
 struct vm_area {
-	char *vm_start;	
+	char *vm_start;
 	char *vm_end;	/* exclude */
 	struct list_head list;
 };
@@ -61,10 +61,10 @@ struct vm_area {
 
 
 /* Pointe sur le sommet du heap noyau */
-char *kern_heap;
+extern char *kern_heap;
 
 /* Pointe sur le debut de la liste des pages libres du noyau */
-struct list_head kern_free_vm;
+extern struct list_head kern_free_vm;
 
 
 #ifdef __MM__
@@ -76,10 +76,10 @@ struct list_head kern_free_vm;
 
 	u32 kmalloc_used = 0;
 #else
-	u32 *pd0;
+	extern u32 *pd0;
 	extern u8 mem_bitmap[];
 
-	u32 kmalloc_used;
+	extern u32 kmalloc_used;
 #endif
 
 

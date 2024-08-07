@@ -4,6 +4,7 @@
 #include "file.h"
 #include "process.h"
 
+struct file *f_root;
 
 /*
  * init_root(): initialise la structure de fichier decrivant la racine.
@@ -34,7 +35,7 @@ struct file *init_root(struct disk *disk)
 /* is_directory(): renvoit 1 si le fichier en argument est un repertoire */
 int is_directory(struct file *fp)
 {
-	if (!fp->inode) 
+	if (!fp->inode)
 		fp->inode = ext2_read_inode(fp->disk, fp->inum);
 
 	return (fp->inode->i_mode & EXT2_S_IFDIR) ? 1 : 0;
@@ -42,7 +43,7 @@ int is_directory(struct file *fp)
 
 /*
  * is_cached_leaf(): dans un repertoire passe en argument, recherche
- * le fichier en parametre parmi les fichiers feuilles presents dans le cache. 
+ * le fichier en parametre parmi les fichiers feuilles presents dans le cache.
  */
 struct file *is_cached_leaf(struct file *dir, char *filename)
 {
@@ -68,16 +69,16 @@ int get_dir_entries(struct file *dir)
 	struct file *leaf;
 	u32 dsize;
 	char *filename;
-	int f_toclose;		
+	int f_toclose;
 
 	//// printk("DEBUG: get_dir_entries(): look for %s leafs\n", dir->name);
 
 	/* Le repertoire est-il dans le cache ? */
-	if (!dir->inode) 
+	if (!dir->inode)
 		dir->inode = ext2_read_inode(dir->disk, dir->inum);
 
-	/* 
-	 * Est-ce que le fichier est bien un repertoire ? 
+	/*
+	 * Est-ce que le fichier est bien un repertoire ?
 	 * FIXME: on ne gere pas les liens symboliques
 	 */
 	if (!is_directory(dir)) {
@@ -85,9 +86,9 @@ int get_dir_entries(struct file *dir)
 		return -1;
 	}
 
-	/* 
+	/*
 	 * Si il n'est pas deja ouvert, on ouvre le repertoire pour le lire. Le
-	 * flag f_toclose indique si il faut fermer le fichier apres lecture. 
+	 * flag f_toclose indique si il faut fermer le fichier apres lecture.
 	 */
 	if (!dir->mmap) {
 		dir->mmap = ext2_read_file(dir->disk, dir->inode);
@@ -96,9 +97,9 @@ int get_dir_entries(struct file *dir)
 		f_toclose = 0;
 	}
 
-	/* 
+	/*
 	 * Lecture de chaque entree du repertoire et creation de la structure
-	 * correspondante si elle n'est pas dans le cache 
+	 * correspondante si elle n'est pas dans le cache
 	 */
 	dsize = dir->inode->i_size;			/* taille du repertoire */
 	dentry = (struct directory_entry *) dir->mmap;
@@ -110,13 +111,13 @@ int get_dir_entries(struct file *dir)
 
 		//// printk("DEBUG: get_dir_entries(): reading inode %d: %s\n", dentry->inode, filename);
 
-		/* 
+		/*
 		 * La feuille est ajoutee dans le cache de fichier (a moins qu'elle y soit deja).
 		 * Note : les entrees '..' et '.' ne sont pas prises en compte.
 		 */
 		if (strcmp(".", filename) && strcmp("..", filename)) {
 
-			if (!(leaf = is_cached_leaf(dir, filename))) {	
+			if (!(leaf = is_cached_leaf(dir, filename))) {
 
 				//// printk("DEBUG: get_dir_entries(): create file struct for %s in cache\n", filename);
 
@@ -166,9 +167,9 @@ struct file *path_to_file(char *path)
 	 else
 		fp = f_root;
 
-	/* 
-	 * Analyse du chemin. 
-	 * Note : 
+	/*
+	 * Analyse du chemin.
+	 * Note :
 	 * -  beg_p pointe sur le debut de mot
 	 * -  end_p pointe sur la fin
 	 */
@@ -177,7 +178,7 @@ struct file *path_to_file(char *path)
 		beg_p++;
 	end_p = beg_p + 1;
 
-	while (*beg_p != 0) {	
+	while (*beg_p != 0) {
 		/* Est-ce que le fichier courant est bien un repertoire */
 		if (!fp->inode)
 			fp->inode = ext2_read_inode(fp->disk, fp->inum);

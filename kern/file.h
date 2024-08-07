@@ -19,7 +19,7 @@ struct open_file {
 	struct open_file *next;
 };
 
-struct file *f_root;		/* root file : "/" */
+extern struct file *f_root;		/* root file : "/" */
 
 
 struct file *init_root(struct disk *);

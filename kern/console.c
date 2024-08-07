@@ -2,9 +2,10 @@
 #include "console.h"
 #include "process.h"
 
-/* 
+struct terminal *current_term;
+/*
  * Pour copier un caractere dans le buffer utilisateur, il faut etre dans le
- * contexte du processus en question ! 
+ * contexte du processus en question !
  */
 void putc_console(char c)
 {
@@ -33,7 +34,7 @@ void putc_console(char c)
 			if (p->console->mode == 1)
 				putcar(c);
 			p->console->inb[p->console->keypos++] = c;
-			p->console->inb[p->console->keypos] = 0; 
+			p->console->inb[p->console->keypos] = 0;
 			p->console->term->pread = 0;
 			p->console->inlock = 0;
 			p->console->keypos = 0;
@@ -41,8 +42,8 @@ void putc_console(char c)
 		else {
 			if (p->console->mode == 1)
 				putcar(c);
-			p->console->inb[p->console->keypos++] = c; 
+			p->console->inb[p->console->keypos++] = c;
 		}
 
-	} 
+	}
 }
