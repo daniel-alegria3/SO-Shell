@@ -31,5 +31,5 @@ clean:
 	find -name '*.o' | xargs $(RM)
 
 .PHONY: qemu
-qemu:
-	qemu-system-i386 -usb -usbdevice disk:sos.img
+qemu: all
+	qemu-system-i386 sos.img
